@@ -1,4 +1,34 @@
 pragma solidity ^0.4.24;
+contract ERC721Receiver {
+  /**
+   * @dev Magic value to be returned upon successful reception of an NFT
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
+   *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
+   */
+  bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
+
+  /**
+   * @notice Handle the receipt of an NFT
+   * @dev The ERC721 smart contract calls this function on the recipient
+   * after a `safetransfer`. This function MAY throw to revert and reject the
+   * transfer. Return of other than the magic value MUST result in the
+   * transaction being reverted.
+   * Note: the contract address is always the message sender.
+   * @param _operator The address which called `safeTransferFrom` function
+   * @param _from The address which previously owned the token
+   * @param _tokenId The NFT identifier which is being transfered
+   * @param _data Additional data with no specified format
+   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+   */
+  function onERC721Received(
+    address _operator,
+    address _from,
+    uint256 _tokenId,
+    bytes _data
+  )
+    public
+    returns(bytes4);
+}
 
 contract EnterpriseEcosystem{
     struct Factory{
@@ -22,6 +52,19 @@ contract EnterpriseEcosystem{
 
     mapping(uint8=>address) product_own_list;
     mapping(uint8=>Product) product_instance_list;
+
+    function isContract(address addr) internal view returns (bool) {
+       uint256 size;
+       // XXX Currently there is no better way to check if there is a contract in an address
+       // than to check the size of the code at that address.
+       // See https://ethereum.stackexchange.com/a/14016/36603
+       // for more details about how this works.
+       // TODO Check this again before the Serenity release, because all addresses will be
+       // contracts then.
+       // solium-disable-next-line security/no-inline-assembly
+       assembly { size := extcodesize(addr) }
+       return size > 0;
+     }
 
 
     function emit_factory(uint8 _factory_id, string _lable) public {
@@ -72,5 +115,18 @@ contract EnterpriseEcosystem{
     function destruct_product(uint8 _product_id) public {
       delete product_own_list[_product_id];
     }
+
+     function safeTransferFrom(address _from, address _to, uint8 _product_id, bytes _data) public {
+       require(product_own_list[_product_id] == _from);
+       if (isContract(_to)) {
+         product_own_list[_product_id] = _to;
+         ERC721Receiver(_to).onERC721Received( msg.sender, _from, _product_id, _data );
+       } else {
+         product_own_list[_product_id] = _to;
+       }
+     }
+    function safeTransferFrom(address _from, address _to, uint8 _product_id) public {
+       safeTransferFrom(_from, _to, _product_id, '');
+     }
 
 }
