@@ -20,14 +20,19 @@ contract ERC721Receiver {
    * @param _data Additional data with no specified format
    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
+   event onERC721Received(address _operator, address _from, uint8 _tokenId, bytes _data);
   function onERC721Received(
     address _operator,
     address _from,
-    uint256 _tokenId,
+    uint8 _tokenId,
     bytes _data
   )
     public
-    returns(bytes4);
+    view
+    returns(bytes4){
+        emit onERC721Received(_operator, _from, _tokenId, _data);
+        return ERC721_RECEIVED;
+    }
 }
 
 contract EnterpriseEcosystem{
