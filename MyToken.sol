@@ -127,6 +127,14 @@ contract EnterpriseEcosystem{
      }
     function safeTransferFrom(address _from, address _to, uint8 _product_id) public {
        safeTransferFrom(_from, _to, _product_id, '');
-     }
+    }
 
+    function getSerializedData() public {
+    }
+
+    function recoveryToken() public {
+    }
+
+    function setPermissensToRecover() public {
+    }
 }
