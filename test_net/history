@@ -2,3 +2,8 @@ eth.getBalance(personal.listAccounts[0])
 eth.getBalance(personal.listAccounts[1])
 personal.listAccounts()
 personal.listAccounts
+txpool.content
+txpool.status
+txpool.constructor
+miner.start()
+miner.stop()
