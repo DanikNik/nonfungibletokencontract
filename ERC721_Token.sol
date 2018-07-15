@@ -134,7 +134,22 @@ contract EnterpriseEcosystem{
        safeTransferFrom(_from, _to, _product_id, '');
     }
 
-    function getSerializedData() public {
+    function getSerializedData(uint8 _product_id) public {
+        require(product_own_list[_product_id] == msg.sender);
+        uint8 factory_assigned = product_instance_list[_product_id]._factory_assigned;
+        uint256 price = product_instance_list[_product_id]._price;
+        string title = product_instance_list[_product_id]._title;
+        bytes1 factory_assigned_to_bytes = bytes1(factory_assigned);
+        bytes32 price_to_bytes = bytes32(price);
+        bytes title_to_bytes = bytes(title);
+        bytes data_to_bytes;
+        uint k = 0;
+        for (uint i = 0; i < factory_assigned_to_bytes.length; i++) data_to_bytes[k++] = factory_assigned_to_bytes[i];
+        for (i = 0; i < price_to_bytes.length; i++) data_to_bytes[k++] = price_to_bytes[i];
+        for (i = 0; i < title_to_bytes.length; i++) data_to_bytes[k++] = title_to_bytes[i];
+
+        return data_to_bytes
+
     }
 
     function recoveryToken() public {
