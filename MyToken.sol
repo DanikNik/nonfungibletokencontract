@@ -1,26 +1,7 @@
 pragma solidity ^0.4.24;
 contract ERC721Receiver {
-  /**
-   * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
-   *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-   */
   bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
-
-  /**
-   * @notice Handle the receipt of an NFT
-   * @dev The ERC721 smart contract calls this function on the recipient
-   * after a `safetransfer`. This function MAY throw to revert and reject the
-   * transfer. Return of other than the magic value MUST result in the
-   * transaction being reverted.
-   * Note: the contract address is always the message sender.
-   * @param _operator The address which called `safeTransferFrom` function
-   * @param _from The address which previously owned the token
-   * @param _tokenId The NFT identifier which is being transfered
-   * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
-   */
-   event onERC721Received(address _operator, address _from, uint8 _tokenId, bytes _data);
+  event onERC721Received(address _operator, address _from, uint8 _tokenId, bytes _data);
   function onERC721Received(
     address _operator,
     address _from,
@@ -134,7 +115,22 @@ contract EnterpriseEcosystem{
        safeTransferFrom(_from, _to, _product_id, '');
     }
 
-    function getSerializedData() public {
+    function getSerializedData(uint8 _product_id) public {
+        require(product_own_list[_product_id] == msg.sender);
+        uint8 factory_assigned = product_instance_list[_product_id]._factory_assigned;
+        uint256 price = product_instance_list[_product_id]._price;
+        string title = product_instance_list[_product_id]._title;
+        bytes1 factory_assigned_to_bytes = bytes1(factory_assigned);
+        bytes32 price_to_bytes = bytes32(price);
+        bytes title_to_bytes = bytes(title);
+        bytes data_to_bytes;
+        uint k = 0;
+        for (uint i = 0; i < factory_assigned_to_bytes.length; i++) data_to_bytes[k++] = factory_assigned_to_bytes[i];
+        for (i = 0; i < price_to_bytes.length; i++) data_to_bytes[k++] = price_to_bytes[i];
+        for (i = 0; i < title_to_bytes.length; i++) data_to_bytes[k++] = title_to_bytes[i];
+
+        return data_to_bytes
+
     }
 
     function recoveryToken() public {
