@@ -140,6 +140,6 @@ contract EnterpriseEcosystem{
     function recoveryToken() public {
     }
 
-    function setPermissensToRecover() public {
+    function setPermissionsToRecover() public {
     }
 }
