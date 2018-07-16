@@ -148,7 +148,7 @@ contract EnterpriseEcosystem{
         for (i = 0; i < price_to_bytes.length; i++) data_to_bytes[k++] = price_to_bytes[i];
         for (i = 0; i < title_to_bytes.length; i++) data_to_bytes[k++] = title_to_bytes[i];
 
-        return data_to_bytes
+        return data_to_bytes;
 
     }
 
