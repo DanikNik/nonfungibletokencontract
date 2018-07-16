@@ -42,7 +42,7 @@ contract EnterpriseEcosystem{
     enum TypeVariants {HomeContract, ForeignContract}
     TypeVariants contract_type;
 
-    constructor(TypeVariants _type){
+    constructor(TypeVariants _type) public payable{
       contract_owner = msg.sender;
       contract_type = _type;
     }
@@ -64,11 +64,11 @@ contract EnterpriseEcosystem{
         uint256 _price;
     }
 
-    mapping(uint8=>address) factory_own_list;
-    mapping(uint8=>Factory) factory_instance_list;
+    mapping(uint8=>address) public  factory_own_list;
+    mapping(uint8=>Factory) public factory_instance_list;
 
-    mapping(uint8=>address) product_own_list;
-    mapping(uint8=>Product) product_instance_list;
+    mapping(uint8=>address) public product_own_list;
+    mapping(uint8=>Product) public product_instance_list;
 
     function isContract(address addr) internal view returns (bool) {
        uint256 size;
@@ -134,7 +134,7 @@ contract EnterpriseEcosystem{
     }
 
      function safeTransferFrom(address _from, address _to, uint8 _product_id, bytes _data) public {
-       require(product_own_list[_product_id] == _from);
+       //require(product_own_list[_product_id] == _from);
        if (isContract(_to)) {
          product_own_list[_product_id] = _to;
          ERC721Receiver(_to).onERC721Received( msg.sender, _from, _product_id, _data );
@@ -190,6 +190,6 @@ contract EnterpriseEcosystem{
 
     function setPermissionsToRecover(address _address_bridge) public {
        require(contract_owner == msg.sender);
-       address_bridge = _address_bridge
+       address_bridge = _address_bridge;
     }
 }
