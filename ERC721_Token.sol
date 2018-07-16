@@ -36,6 +36,18 @@ contract ERC721Receiver {
 }
 
 contract EnterpriseEcosystem{
+    // Адрес владельца контракта
+    address contract_owner;
+    address address_bridge;
+    enum TypeVariants {HomeContract, ForeignContract}
+    TypeVariants contract_type;
+
+    constructor(TypeVariants _type){
+      contract_owner = msg.sender;
+      contract_type = _type;
+    }
+
+
     struct Factory{
         uint8 _factory_id;
         address _owner;
@@ -174,13 +186,10 @@ contract EnterpriseEcosystem{
         product_instance_list[_product_id]._title
       ) = getDeserializedData(_token_data);
 
-
-
-
-
-
     }
 
-    function setPermissionsToRecover() public {
+    function setPermissionsToRecover(address _address_bridge) public {
+       require(contract_owner == msg.sender);
+       address_bridge = _address_bridge
     }
 }
