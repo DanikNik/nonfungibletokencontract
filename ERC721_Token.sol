@@ -134,25 +134,51 @@ contract EnterpriseEcosystem{
        safeTransferFrom(_from, _to, _product_id, '');
     }
 
-    function getSerializedData(uint8 _product_id) public {
+    function getSerializedData(uint8 _product_id) public view returns (bytes) {
         require(product_own_list[_product_id] == msg.sender);
         uint8 factory_assigned = product_instance_list[_product_id]._factory_assigned;
         uint256 price = product_instance_list[_product_id]._price;
-        string title = product_instance_list[_product_id]._title;
+        string memory title = product_instance_list[_product_id]._title;
         bytes1 factory_assigned_to_bytes = bytes1(factory_assigned);
         bytes32 price_to_bytes = bytes32(price);
-        bytes title_to_bytes = bytes(title);
-        bytes data_to_bytes;
+        bytes memory title_to_bytes = bytes(title);
+        bytes memory data_to_bytes = new bytes(factory_assigned_to_bytes.length + price_to_bytes.length + title_to_bytes.length);
         uint k = 0;
         for (uint i = 0; i < factory_assigned_to_bytes.length; i++) data_to_bytes[k++] = factory_assigned_to_bytes[i];
         for (i = 0; i < price_to_bytes.length; i++) data_to_bytes[k++] = price_to_bytes[i];
         for (i = 0; i < title_to_bytes.length; i++) data_to_bytes[k++] = title_to_bytes[i];
 
-        return data_to_bytes
-
+        return data_to_bytes;
     }
 
-    function recoveryToken() public {
+    function getDeserializedData(bytes _data) private pure returns (uint8, uint256, string){
+      bytes1 out_bytes1;
+      bytes32 out_bytes32;
+      bytes memory out_bytes = new bytes(_data.length - 33);
+      for (uint i = 0; i < 1; i++) {
+        out_bytes1 |= bytes1(_data[i]) >> (i * 8);
+      }
+      for (i = 1; i < 32+1; i++) {
+        out_bytes32 |= bytes32(_data[i]) >> (i * 8);
+      }
+      for (i = 32+1; i < _data.length; i++) {
+        out_bytes[i-33] = _data[i];
+      }
+      return (uint8(out_bytes1), uint256(out_bytes1), string(out_bytes));
+    }
+
+    function recoveryToken(uint8 _product_id, address _to, bytes _token_data) public {
+      (
+        product_instance_list[_product_id]._factory_assigned,
+        product_instance_list[_product_id]._price,
+        product_instance_list[_product_id]._title
+      ) = getDeserializedData(_token_data);
+
+
+
+
+
+
     }
 
     function setPermissionsToRecover() public {
